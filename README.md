@@ -2,6 +2,16 @@
 
 一条混语订货消息，经过核对与人工批准，成为可追溯的送货单。
 
+## 在线预览
+
+**<https://yelianghui684-ops.github.io/kiraorder/>** — 浏览器直接打开，无需安装、无需后端。
+
+- 默认进入 **LOCAL DEMO** 演示：合成客户与商品，可切换跟单员 / 老板 / 仓库三种角色。
+- 想跳过 3D 开场，直接进入工作台：<https://yelianghui684-ops.github.io/kiraorder/#/workspace>
+- 站点的构建产物位于 `gh-pages` 分支，源码在本 `main` 分支。
+
+部署路径由 `vite.config.ts` 的 `base: "/kiraorder/"` 决定。仓库改名或改挂载路径后，需同步修改 `base` 并运行 `scripts/deploy_pages.sh` 重新发布。
+
 面向操作人员的中文指南见 [KiraOrder 使用说明](docs/KiraOrder_使用说明.md)，包含快速上手、跟单核对、老板审批、仓库拣货、API 连接及常见问题。
 
 说明与终版方案、Gate 0 契约及当前实现的逐项关系见 [使用说明与方案细节对照](docs/KiraOrder_使用说明与方案细节对照.md)，其中单独列出尚未补齐的功能和联调项。
