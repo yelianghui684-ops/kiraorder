@@ -1,16 +1,19 @@
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 
-/** Alternate two decoders so the opening frames blend over the ending frames. */
-export function SeamlessBackdrop({
+/** Closed-loop assets play natively; other footage blends between two decoders. */
+export const SeamlessBackdrop = memo(function SeamlessBackdrop({
   src,
   poster,
   paused,
+  looped = false,
 }: {
   src: string;
   poster: string;
   paused: boolean;
+  looped?: boolean;
 }) {
   const videos = useRef<(HTMLVideoElement | null)[]>([]);
+  const previousSrc = useRef(src);
   const cycle = useRef<{ active: number; incoming: number | null }>({
     active: 0,
     incoming: null,
@@ -18,12 +21,26 @@ export function SeamlessBackdrop({
 
   useEffect(() => {
     const layers = videos.current;
+    if (previousSrc.current !== src) {
+      previousSrc.current = src;
+      cycle.current = { active: 0, incoming: null };
+      layers.forEach((video, index) => {
+        if (!video) return;
+        video.style.opacity = index === 0 ? "1" : "0";
+        video.style.zIndex = index === 0 ? "1" : "0";
+      });
+    }
     layers.forEach((video) => {
       if (video) video.playbackRate = 1.2;
     });
     if (paused) {
       layers.forEach((video) => video?.pause());
       return;
+    }
+    if (looped) {
+      const video = layers[0];
+      void video?.play().catch(() => { /* Retain the poster if autoplay is unavailable. */ });
+      return () => video?.pause();
     }
     let frame = 0;
     let disposed = false;
@@ -84,12 +101,12 @@ export function SeamlessBackdrop({
       cancelAnimationFrame(frame);
       layers.forEach((video) => video?.pause());
     };
-  }, [paused, src]);
+  }, [paused, src, looped]);
 
   return (
     <div className="nebula-backdrop" data-paused={paused} aria-hidden="true">
       <div className="nebula-video-drift">
-        {[0, 1].map((layer) => (
+        {(looped ? [0] : [0, 1]).map((layer) => (
           <video
             key={layer}
             ref={(video) => {
@@ -98,6 +115,7 @@ export function SeamlessBackdrop({
             src={src}
             poster={poster}
             muted
+            loop={looped}
             autoPlay={!paused && layer === 0}
             playsInline
             preload="auto"
@@ -114,4 +132,4 @@ export function SeamlessBackdrop({
       <div className="nebula-haze nebula-haze-blue" />
     </div>
   );
-}
+});

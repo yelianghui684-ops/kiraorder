@@ -64,6 +64,7 @@ import {
   Loading,
   Modal,
   Pill,
+  PendingChecks,
   shortId,
   Spinner,
   Status,
@@ -373,9 +374,11 @@ function Workspace() {
           onClick={() => navigate("workspace")}
           aria-label="KiraOrder overview"
         >
-          <span className="brand-glyph">✦</span>
+          <svg className="brand-glyph" viewBox="0 0 32 32" aria-hidden="true">
+            <path fill="currentColor" d="M16 0 21.5 10.5 32 16 21.5 21.5 16 32 10.5 21.5 0 16 10.5 10.5Z" />
+          </svg>
           <span>
-            KiraOrder<small>FOR ORBYTE</small>
+            KiraOrder<small>For Orbyte</small>
           </span>
         </button>
         <WorkspaceSwitcher
@@ -391,7 +394,7 @@ function Workspace() {
             forceNav(demoRole === "WAREHOUSE" ? "warehouse" : "workspace");
           }}
         />
-        <div className="nav-caption">WORKSPACE</div>
+        <div className="nav-caption">Workspace</div>
         <nav aria-label="Main navigation">
           {me?.role === "WAREHOUSE" ? (
             <button
@@ -450,7 +453,7 @@ function Workspace() {
           )}
         </nav>
         <div className="sidebar-section">
-          <div className="nav-caption">SETTINGS</div>
+          <div className="nav-caption">Settings</div>
           <nav aria-label="Workspace settings">
             <button
               className={`nav-item ${selectedNavigation === "connection" ? "selected" : ""}`}
@@ -501,7 +504,7 @@ function Workspace() {
             <ArrowUpRight size={14} />
           </button>
           <div className="sidebar-footer">
-            <span className="tiny-star">✦</span> FOR ORBYTE
+            <span>For Orbyte</span>
             <span className="app-version" title="Workbench design iteration">
               v{APP_VERSION}
             </span>
@@ -848,17 +851,29 @@ function Overview({
     <div ref={motionRoot} className="overview-motion">
       <div className="overview-heading desk-heading">
         <div>
-          <h1>
-            Overview<span className="mint-text">.</span>
-          </h1>
+          <h1>Overview</h1>
           <p>
             {me.display_name} <span>·</span>{" "}
             {dateLabel(new Date().toISOString())}
           </p>
           <p className="desk-summary">
             {needs.length
-              ? `${needs.length} ${needs.length === 1 ? "order needs" : "orders need"} your decision before moving forward.`
-              : "Your order queue is up to date."}
+              ? (
+                <>
+                  <strong>{needs.length} {needs.length === 1 ? "order needs" : "orders need"} review.</strong>{" "}
+                  Resolve checks before approval.
+                </>
+              )
+              : ready.length
+                ? (
+                  <>
+                    <strong>{ready.length} {ready.length === 1 ? "order is" : "orders are"} ready to approve.</strong>{" "}
+                    Review the saved details.
+                  </>
+                )
+                : pending.length
+                  ? `${pending.length} ${pending.length === 1 ? "order awaits" : "orders await"} the owner’s decision.`
+                  : "No orders need action."}
           </p>
         </div>
         <button className="button primary" onClick={() => navigate("new")}>
@@ -870,7 +885,7 @@ function Overview({
       <div className="stats-grid desk-stats">
         {[
           {
-            label: "Needs a decision",
+            label: "Needs review",
             n: needs.length,
             Icon: MessageSquareText,
             tone: "amber",
@@ -884,7 +899,7 @@ function Overview({
             filter: "ready",
           },
           {
-            label: "With owner",
+            label: "Awaiting owner",
             n: pending.length,
             Icon: ShieldCheck,
             tone: "blue",
@@ -918,19 +933,18 @@ function Overview({
       <div className="overview-grid desk-grid">
         <section className="next-card desk-next">
           <div className="rail-title">
-            Up next · Oldest first
-            <ArrowUpRight size={14} />
+            Up next
+            <span className="rail-meta">Oldest in stage</span>
           </div>
           {next ? (
             <>
               <div className="next-content">
                 <h3>{next.customer_name}</h3>
-                <Status status={next.status} />
-                <p className="next-context">
-                  {next.status === "DISAMBIGUATION_REQUIRED"
-                    ? `${next.open_blocking_issue_count} ${next.open_blocking_issue_count === 1 ? "check" : "checks"} to resolve.`
-                    : "All checks complete."}
-                </p>
+                {next.open_blocking_issue_count > 0 ? (
+                  <PendingChecks count={next.open_blocking_issue_count} />
+                ) : (
+                  <Status status={next.status} />
+                )}
               </div>
               <button
                 className="button secondary small"
@@ -953,8 +967,12 @@ function Overview({
         <section className="panel queue-panel">
           <div className="panel-heading">
             <div>
-              <h2>Orders</h2>
-              <p className="queue-caption">Your open orders, in one place.</p>
+              <h2>Order queue</h2>
+              <p className="queue-caption">
+                {queue.length > 6
+                  ? `Showing 6 of ${queue.length} orders`
+                  : `${queue.length} ${queue.length === 1 ? "order" : "orders"}`} · Checks first
+              </p>
             </div>
             <button className="text-button" onClick={() => navigate("inbox")}>
               View all
@@ -1027,9 +1045,9 @@ export function OrderQueue({
   return (
     <div className={`order-table ${compact ? "compact" : ""}`}>
       <div className="order-table-head">
-        <span>CUSTOMER / MESSAGE</span>
-        <span>STATUS</span>
-        <span>RECEIVED</span>
+        <span>Customer / message</span>
+        <span>Status</span>
+        <span>Received</span>
         <span />
       </div>
       {drafts.map((d) => (
@@ -1061,13 +1079,10 @@ export function OrderQueue({
             </div>
           </div>
           <div className="row-state">
-            <Status status={d.status} />
-            {d.open_blocking_issue_count > 0 && (
-              <small>
-                {d.open_blocking_issue_count}{" "}
-                {d.open_blocking_issue_count === 1 ? "check" : "checks"} to
-                resolve
-              </small>
+            {d.status === "DISAMBIGUATION_REQUIRED" && d.open_blocking_issue_count > 0 ? (
+              <PendingChecks count={d.open_blocking_issue_count} />
+            ) : (
+              <Status status={d.status} />
             )}
           </div>
           <span className="row-time">{time(d.created_at ?? d.updated_at)}</span>
@@ -1103,10 +1118,7 @@ function InboxPage({
   );
   return (
     <>
-      <PageHeading
-        title="Order inbox"
-        description="Find an order, resolve its checks, and keep it moving."
-      >
+      <PageHeading title="Order inbox">
         <button className="button primary" onClick={() => navigate("new")}>
           <Plus size={17} /> New order
         </button>
@@ -1116,9 +1128,9 @@ function InboxPage({
           <div className="tabs" role="group" aria-label="Filter orders">
             {[
               ["all", "All orders"],
-              ["needs", "Needs a decision"],
-              ["ready", "Ready"],
-              ["owner", "With owner"],
+              ["needs", "Needs review"],
+              ["ready", "Ready to approve"],
+              ["owner", "Awaiting owner"],
               ["closed", "Closed"],
             ].map(([key, label]) => (
               <button

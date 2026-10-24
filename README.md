@@ -6,8 +6,11 @@
 
 **<https://yelianghui684-ops.github.io/kiraorder/>** — 浏览器直接打开，无需安装、无需后端。
 
-- 默认进入 **LOCAL DEMO** 演示：合成客户与商品，可切换跟单员 / 老板 / 仓库三种角色。
-- 想跳过 3D 开场，直接进入工作台：<https://yelianghui684-ops.github.io/kiraorder/#/workspace>
+打开后先播放 **3D 开场**（混语问候的语言轨道与滚动叙事）。点击 / 轻触屏幕任意位置，或按 Enter / 空格，即可进入工作台。
+
+- 进入后默认是 **LOCAL DEMO** 演示：合成客户与商品，可切换跟单员 / 老板 / 仓库三种角色。
+- 想跳过开场、直接进工作台：<https://yelianghui684-ops.github.io/kiraorder/#/workspace>
+- 浏览器无法创建 WebGL 上下文时会自动跳过 3D 开场，直接进入工作台，不会停在错误页。
 - 站点的构建产物位于 `gh-pages` 分支，源码在本 `main` 分支。
 
 部署路径由 `vite.config.ts` 的 `base: "/kiraorder/"` 决定。仓库改名或改挂载路径后，需同步修改 `base` 并运行 `scripts/deploy_pages.sh` 重新发布。

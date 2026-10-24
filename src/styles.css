@@ -127,10 +127,7 @@ a {
 }
 .app-shell {
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 85% 0, var(--tone-1b2c41) 0%, var(--tone-15223342) 40%, transparent 60%),
-    radial-gradient(ellipse at 8% 100%, var(--tone-12251d26), transparent 45%),
-    var(--bg);
+  background: var(--bg);
 }
 .sidebar {
   width: 250px;
@@ -161,12 +158,13 @@ a {
   letter-spacing: -0.8px;
 }
 .brand-glyph {
-  font-size: 44px;
+  display: block;
+  width: 32px;
+  height: 32px;
   color: var(--mint);
   font-family: Georgia;
   line-height: 1;
   font-weight: normal;
-  text-shadow: 0 0 18px var(--tone-94e3bd55);
 }
 .brand small {
   display: block;
@@ -262,16 +260,12 @@ a {
   flex: 1;
 }
 .nav-item.selected {
-  background: linear-gradient(90deg, var(--tone-12281e), var(--tone-0b1512) 70%);
-  border-color: var(--tone-2f5a45);
-  color: var(--tone-f4f7f8);
-  box-shadow:
-    inset 3px 0 0 var(--mint),
-    0 0 18px var(--tone-94e3bd12);
+  background: var(--panel2);
+  border-color: var(--border);
+  color: var(--text);
 }
 .nav-item.selected svg {
   color: var(--tone-bde8d0);
-  filter: drop-shadow(0 0 6px var(--tone-94e3bd66));
 }
 .nav-item:hover {
   background: var(--tone-18212b);
@@ -498,7 +492,6 @@ a {
   margin: 9px 0 8px;
   color: var(--tone-e8edf1);
   font-weight: 400;
-  text-shadow: 0 0 34px var(--tone-94e3bd1a);
 }
 .overview-heading p {
   font-size: 13.5px;
@@ -614,15 +607,12 @@ a {
   white-space: nowrap;
 }
 .button.primary {
-  background: linear-gradient(135deg, var(--tone-b3eccd), var(--tone-8fd4ae));
+  background: var(--mint);
   color: var(--tone-0e2b1e);
   border-color: var(--tone-c4f2da);
-  box-shadow: 0 3px 10px var(--tone-00000044), 0 0 22px var(--tone-94e3bd22);
 }
 .button.primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--tone-c4f4da), var(--tone-a2e2c0));
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px var(--tone-00000055), 0 0 34px var(--tone-94e3bd3d);
+  background: var(--tone-c4f4da);
 }
 .button.secondary {
   color: var(--tone-c9d4de);
@@ -817,8 +807,7 @@ a {
 }
 .stat-card {
   border: 1px solid var(--tone-2c3a47);
-  background:
-    radial-gradient(ellipse at 100% 0, var(--stat)14, transparent 55%), var(--tone-111922);
+  background: var(--panel);
   border-radius: 12px;
   text-align: left;
   padding: 19px 20px 16px;
@@ -827,18 +816,6 @@ a {
     transform 0.2s,
     border-color 0.2s,
     box-shadow 0.2s;
-}
-.stat-card:before {
-  content: "";
-  height: 3px;
-  width: 26px;
-  position: absolute;
-  top: -1px;
-  left: 20px;
-  background: var(--stat);
-  border-radius: 0 0 3px 3px;
-  opacity: 0.9;
-  box-shadow: 0 0 10px var(--stat);
 }
 .stat-card.amber {
   --stat: var(--amber);
@@ -854,10 +831,7 @@ a {
 }
 .stat-card:hover {
   border-color: var(--tone-556e72);
-  background:
-    radial-gradient(ellipse at 100% 0, var(--stat)1f, transparent 55%), var(--tone-182430);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px var(--tone-00000099), 0 0 24px var(--stat)0f;
+  background: var(--panel2);
 }
 .stat-card > div {
   display: flex;
@@ -870,7 +844,6 @@ a {
 .stat-card > div > svg {
   color: var(--stat);
   stroke-width: 1.6;
-  filter: drop-shadow(0 0 6px var(--stat));
 }
 .stat-card > strong {
   font-family: var(--serif);
@@ -880,7 +853,6 @@ a {
   display: block;
   margin: 10px 0 9px;
   color: var(--tone-e6ecf1);
-  text-shadow: 0 0 26px var(--stat)55;
 }
 .stat-card > small {
   display: flex;
@@ -937,92 +909,6 @@ a {
   line-height: 1.25;
   max-width: 300px;
 }
-.order-table-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 180px 80px 16px;
-  gap: 16px;
-  padding: 13px 24px;
-  border-top: 1px solid var(--tone-24303b);
-  border-bottom: 1px solid var(--tone-24303b);
-  color: var(--tone-8699a8);
-  letter-spacing: 0.9px;
-  background: var(--tone-0d151e);
-}
-.order-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 180px 80px 16px;
-  gap: 16px;
-  align-items: center;
-  background: transparent;
-  width: 100%;
-  border: 0;
-  border-bottom: 1px solid var(--tone-202b36);
-  min-height: 96px;
-  padding: 18px 24px;
-  text-align: left;
-  transition: background 0.18s, padding-left 0.18s, box-shadow 0.18s;
-}
-.order-row:last-child {
-  border-bottom: 0;
-}
-.order-row:hover {
-  background: var(--tone-17212c);
-  padding-left: 28px;
-  box-shadow: inset 3px 0 0 var(--mint);
-}
-.customer-cell {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  min-width: 0;
-}
-.customer-avatar {
-  width: 33px;
-  height: 34px;
-  border: 1px solid var(--tone-384840);
-  background: var(--tone-25352f);
-  border-radius: 6px;
-  display: grid;
-  place-items: center;
-  color: var(--tone-b5cabc);
-  letter-spacing: 0.3px;
-  flex-shrink: 0;
-}
-.customer-avatar.warm {
-  background: var(--tone-322e25);
-  border-color: var(--tone-484033);
-  color: var(--tone-c8b69a);
-}
-.customer-avatar.cool {
-  background: var(--tone-263344);
-  border-color: var(--tone-394c65);
-  color: var(--tone-adc5df);
-}
-.customer-cell > div {
-  min-width: 0;
-}
-.customer-cell strong {
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--tone-e0e7ee);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.customer-cell strong small {
-  color: var(--tone-7a90a4);
-  letter-spacing: 0.3px;
-  font-weight: 400;
-}
-.customer-cell p {
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--tone-93a5b5);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  margin-top: 6px;
-}
 .pill {
   display: inline-flex;
   align-items: center;
@@ -1068,40 +954,6 @@ a {
   border-color: var(--tone-36404a);
   background: var(--tone-1a2530);
 }
-.row-state > small {
-  display: block;
-  color: var(--tone-93a3b3);
-  font-size: 10px;
-  margin-top: 6px;
-}
-.row-time {
-  font-size: 12px;
-  color: var(--tone-9dacba);
-  font-variant-numeric: tabular-nums;
-}
-.row-arrow {
-  color: var(--tone-65798a);
-  stroke-width: 1.3;
-}
-.compact .order-table-head,
-.compact .order-row {
-  grid-template-columns: minmax(0, 1fr) 132px 43px 14px;
-  gap: 8px;
-  padding-inline: 20px;
-}
-.compact .order-row {
-  min-height: 84px;
-}
-.compact .customer-cell strong small {
-  display: none;
-}
-.compact .customer-cell {
-  gap: 9px;
-}
-.compact .customer-cell p {
-  font-size: 10px;
-  max-width: 230px;
-}
 .compact .pill {
   padding: 5px 6px;
 }
@@ -1115,13 +967,10 @@ a {
   background: var(--tone-0c161b4d);
 }
 .next-card {
-  background:
-    radial-gradient(ellipse at 0 0, var(--tone-2c4a3c66), transparent 60%),
-    linear-gradient(150deg, var(--tone-14231f), var(--tone-121e21));
+  background: var(--panel2);
   border: 1px solid var(--tone-35503f);
   border-radius: 12px;
   padding: 22px;
-  box-shadow: 0 0 30px var(--tone-1e3a2c22);
 }
 .rail-title {
   display: flex;
@@ -3147,7 +2996,6 @@ a {
     animation: none;
   }
   .button,
-  .order-row,
   .approval-card,
   .delivery-list > button,
   .pick-row {
@@ -3348,20 +3196,6 @@ a {
   .hero-universe {
     right: 50px;
   }
-  .compact .order-table-head,
-  .compact .order-row {
-    grid-template-columns: minmax(0, 1fr) 155px 55px 15px;
-    gap: 17px;
-  }
-  .compact .customer-cell p {
-    max-width: 360px;
-  }
-  .compact .customer-cell strong {
-    font-size: 12px;
-  }
-  .compact .customer-cell p {
-    font-size: 10px;
-  }
   .next-card h3 {
     font-size: 28px;
   }
@@ -3418,29 +3252,6 @@ a {
   }
   .hero-copy > small {
     display: none;
-  }
-  .compact .order-table-head,
-  .compact .order-row {
-    grid-template-columns: minmax(0, 1fr) 122px 15px;
-    padding-inline: 16px;
-    gap: 9px;
-  }
-  .compact .row-time,
-  .compact .order-table-head > span:nth-child(3) {
-    display: none;
-  }
-  .compact .customer-cell {
-    gap: 8px;
-  }
-  .compact .customer-cell p {
-    max-width: 170px;
-  }
-  .compact .customer-cell strong {
-    font-size: 9px;
-  }
-  .customer-avatar {
-    width: 29px;
-    height: 30px;
   }
   .queue-panel .panel-heading {
     padding: 20px 16px;
@@ -3645,23 +3456,6 @@ a {
     font-size: 25px;
     max-width: 300px;
   }
-  .compact .order-table-head,
-  .compact .order-row {
-    grid-template-columns: minmax(0, 1fr) 150px 55px 16px;
-    gap: 15px;
-    padding-inline: 22px;
-  }
-  .compact .row-time,
-  .compact .order-table-head > span:nth-child(3) {
-    display: block;
-  }
-  .compact .customer-cell strong {
-    font-size: 11px;
-  }
-  .compact .customer-cell p {
-    font-size: 9px;
-    max-width: 280px;
-  }
   .hero-copy h2 {
     font-size: 41px;
   }
@@ -3815,11 +3609,6 @@ a {
   }
   .panel-heading h2 {
     font-size: 21px;
-  }
-  .order-table-head,
-  .order-row {
-    grid-template-columns: minmax(0, 1fr) 140px 50px 15px;
-    gap: 10px;
   }
   .queue-toolbar .tabs button {
     padding-inline: 8px;
@@ -4020,51 +3809,9 @@ a {
     font-size: 24px;
     max-width: 240px;
   }
-  .compact .order-table-head,
-  .compact .order-row,
-  .order-table-head,
-  .order-row {
-    grid-template-columns: minmax(0, 1fr) 131px 13px;
-    gap: 8px;
-    padding-inline: 18px;
-  }
-  .order-table-head > span:nth-child(3),
-  .row-time,
-  .compact .row-time,
-  .compact .order-table-head > span:nth-child(3) {
-    display: none;
-  }
-  .customer-cell strong,
-  .compact .customer-cell strong {
-    font-size: 10px;
-  }
-  .customer-cell strong small {
-    display: none;
-  }
-  .customer-cell,
-  .compact .customer-cell {
-    gap: 10px;
-  }
-  .customer-cell p,
-  .compact .customer-cell p {
-    font-size: 8px;
-    max-width: 250px;
-  }
-  .customer-avatar {
-    width: 31px;
-    height: 32px;
-  }
-  .order-row,
-  .compact .order-row {
-    padding-block: 19px;
-    min-height: 84px;
-  }
   .pill,
   .compact .pill {
     padding: 5px 6px;
-  }
-  .row-state > small {
-    font-size: 7px;
   }
   .next-card {
     padding: 19px;
@@ -4530,37 +4277,10 @@ a {
   .queue-panel .text-button {
     gap: 4px;
   }
-  .compact .order-table-head,
-  .compact .order-row,
-  .order-table-head,
-  .order-row {
-    grid-template-columns: minmax(0, 1fr) 112px 10px;
-    gap: 7px;
-    padding-inline: 14px;
-  }
-  .customer-avatar {
-    display: none;
-  }
-  .customer-cell strong,
-  .compact .customer-cell strong {
-    font-size: 9px;
-    line-height: 1.5;
-  }
-  .customer-cell p,
-  .compact .customer-cell p {
-    max-width: 170px;
-    font-size: 7px;
-  }
   .pill,
   .compact .pill {
     padding: 5px 6px;
     gap: 4px;
-  }
-  .row-state small {
-    font-size: 6px;
-  }
-  .row-arrow {
-    width: 13px;
   }
   .panel-footnote {
     padding-inline: 15px;
@@ -5392,9 +5112,6 @@ a {
   .overview-heading h1 {
     font-size: 35px;
   }
-  .compact .order-row {
-    min-height: 78px;
-  }
 }
 @media (min-width: 1500px) {
   .hero-panel {
@@ -5455,17 +5172,6 @@ a {
   }
   .stat-card > small {
     font-size: 11px;
-  }
-  .customer-cell strong,
-  .compact .customer-cell strong {
-    font-size: 13.5px;
-  }
-  .customer-cell p,
-  .compact .customer-cell p {
-    font-size: 12.5px;
-  }
-  .row-state > small {
-    font-size: 10px;
   }
   .next-card p {
     font-size: 13px;
@@ -5595,14 +5301,6 @@ a {
   .hero-copy > small {
     font-size: 11px;
   }
-  .compact .order-table-head,
-  .compact .order-row {
-    grid-template-columns: minmax(0, 1fr) 168px 50px 15px;
-    gap: 13px;
-  }
-  .compact .customer-cell p {
-    max-width: 280px;
-  }
   .checks-panel {
     min-width: 0;
   }
@@ -5623,11 +5321,6 @@ a {
 @media (min-width: 1500px) {
   .review-layout {
     grid-template-columns: minmax(0, 1fr) 310px;
-  }
-  .compact .order-table-head,
-  .compact .order-row {
-    grid-template-columns: minmax(0, 1fr) 160px 52px 15px;
-    gap: 18px;
   }
   .hero-copy h2 {
     font-size: 44px;
@@ -5695,17 +5388,6 @@ a {
   }
   .breadcrumb strong {
     font-size: 10px;
-  }
-  .customer-cell strong,
-  .compact .customer-cell strong {
-    font-size: 11px;
-  }
-  .customer-cell p,
-  .compact .customer-cell p {
-    font-size: 9px;
-  }
-  .row-state > small {
-    font-size: 8px;
   }
   .next-card p {
     font-size: 11px;
@@ -5807,17 +5489,6 @@ a {
   .stat-card > small {
     font-size: 8px;
   }
-  .customer-cell p,
-  .compact .customer-cell p {
-    font-size: 9px;
-  }
-  .compact .order-table-head,
-  .compact .order-row,
-  .order-table-head,
-  .order-row {
-    grid-template-columns: minmax(0, 1fr) 120px 10px;
-    gap: 7px;
-  }
   .hero-copy h2 {
     font-size: 38px;
   }
@@ -5907,18 +5578,6 @@ a {
 
 /* v1.3.0 — 移动端可读性底线:手机/平板下工作台内容文字不再低于以下标度。 */
 @media (max-width: 760px) {
-  .app-shell .order-table-head {
-    letter-spacing: 0.8px;
-  }
-  .app-shell .customer-cell p {
-    font-size: 10px;
-  }
-  .app-shell .row-time {
-    font-size: 10px;
-  }
-  .app-shell .row-state > small {
-    font-size: 10px;
-  }
   .app-shell .mini-activity strong {
     font-size: 10px;
   }

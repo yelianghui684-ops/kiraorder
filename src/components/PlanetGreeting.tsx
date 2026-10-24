@@ -1,9 +1,11 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { memo, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, Stars } from "@react-three/drei";
 import type { PerspectiveCamera } from "three";
 import { SeamlessBackdrop } from "./SeamlessBackdrop";
+import { useTheme, useThemeHold } from "../lib/theme";
+import { useIntroPhone } from "./useIntroPhone";
 import { useIntroMotion } from "./useIntroMotion";
 import { usePageVisibility } from "./usePageVisibility";
 import { advanceSpring } from "../lib/spring";
@@ -17,10 +19,23 @@ const VIDEO_URL =
 const POSTER_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260806_132328_5f9029c8-218f-4489-82b6-29ff2849920e.png";
 
+const DAYLIGHT_VIDEO_URL = `${import.meta.env.BASE_URL}assets/daylight-wave-gentle-loop.mp4`;
+const DAYLIGHT_POSTER_URL = `${import.meta.env.BASE_URL}assets/daylight-wave-gentle-loop.jpg`;
+
+const MOBILE_DAY_VIDEO = `${import.meta.env.BASE_URL}assets/daylight-wave-mobile.mp4`;
+const MOBILE_DAY_POSTER = `${import.meta.env.BASE_URL}assets/daylight-wave-mobile.jpg`;
+const MOBILE_NIGHT_VIDEO = `${import.meta.env.BASE_URL}assets/night-background-mobile.mp4`;
+const MOBILE_NIGHT_POSTER = `${import.meta.env.BASE_URL}assets/night-background-mobile.jpg`;
+
 const RING_RADIUS = 3.4;
 const BASE_Z = 8.2;
 const BASE_FOV = 46;
 const IDLE_SPIN = 0.2;
+const INTRO_CAMERA = { position: [0, 0, BASE_Z] as [number, number, number], fov: BASE_FOV };
+const INTRO_PHONE_RESIZE = { scroll: false, offsetSize: true };
+const INTRO_DESKTOP_DPR: [number, number] = [1, 1.5];
+const INTRO_DESKTOP_GL = { antialias: true, alpha: true };
+const INTRO_PHONE_GL = { antialias: false, alpha: true };
 const RING_COUNT = 3;
 const PER_RING = 10;
 const STAGES = 5;
@@ -99,7 +114,7 @@ type SceneProps = {
   setHovered: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
-function Scene({
+const Scene = memo(function Scene({
   htmlPortal,
   rings,
   orbit,
@@ -115,7 +130,9 @@ function Scene({
   motionPaused,
   pointer,
   daylight,
+  phone,
 }: SceneProps & {
+  phone: boolean;
   daylight: boolean;
   motionPaused: boolean;
   pointer: React.RefObject<{ x: number; y: number }>;
@@ -172,8 +189,10 @@ function Scene({
         a.getWorldPosition(worldPos);
         const t = clamp((worldPos.z / RING_RADIUS + 1) / 2, 0, 1);
         const op = 0.14 + 0.86 * t;
-        el.style.opacity = String(op);
-        el.style.pointerEvents = op < 0.4 ? "none" : "auto";
+        const opacity = String(Math.round(op * 100) / 100);
+        const events = op < 0.4 ? "none" : "auto";
+        if (el.style.opacity !== opacity) el.style.opacity = opacity;
+        if (el.style.pointerEvents !== events) el.style.pointerEvents = events;
         const face = el.firstElementChild as HTMLElement | null;
         const scale = advanceSpring(
           hoverSprings[i],
@@ -182,7 +201,10 @@ function Scene({
           240,
           17,
         );
-        if (face) face.style.transform = `scale(${scale})`;
+        if (face) {
+          const transform = `scale(${Math.round(scale * 1000) / 1000})`;
+          if (face.style.transform !== transform) face.style.transform = transform;
+        }
       }
     }
   });
@@ -193,7 +215,7 @@ function Scene({
       {!daylight && <Stars
         radius={70}
         depth={40}
-        count={2600}
+        count={phone ? 900 : 2600}
         factor={3}
         saturation={0}
         fade
@@ -203,7 +225,7 @@ function Scene({
         {rings.map((ring, r) => (
           <group key={r} rotation={RING_TILTS[r]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[RING_RADIUS, 0.004, 6, 160]} />
+              <torusGeometry args={[RING_RADIUS, 0.004, 6, phone ? 96 : 160]} />
               <meshBasicMaterial
                 color={daylight ? "#24553f" : "#7fe9c0"}
                 transparent
@@ -225,6 +247,7 @@ function Scene({
                   }}
                 >
                   <Html
+                    eps={phone ? 0.5 : 0.001}
                     portal={htmlPortal as React.RefObject<HTMLElement>}
                     center
                     distanceFactor={6.5}
@@ -236,10 +259,12 @@ function Scene({
                       ref={(el) => {
                         labelRefs.current![i] = el;
                       }}
-                      onPointerEnter={() => setHovered(i)}
-                      onPointerLeave={() =>
-                        setHovered((h) => (h === i ? null : h))
-                      }
+                      onPointerEnter={(event) => {
+                        if (event.pointerType === "mouse") setHovered(i);
+                      }}
+                      onPointerLeave={(event) => {
+                        if (event.pointerType === "mouse") setHovered((h) => (h === i ? null : h));
+                      }}
                       style={{
                         pointerEvents: "auto",
                       }}
@@ -290,17 +315,15 @@ function Scene({
       </group>
     </>
   );
-}
+});
 
 export default function PlanetGreeting({ onEnter }: { onEnter: () => void }) {
   // Keep the visible experience continuous; pause work only while the page is hidden.
   const motionPaused = !usePageVisibility();
-  const [daylight, setDaylight] = useState(() => document.documentElement.dataset.theme === "light");
-  useEffect(() => {
-    const observer = new MutationObserver(() => setDaylight(document.documentElement.dataset.theme === "light"));
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
+  // The day/night handoff captures both frames, so the picture holds still while it runs.
+  const scenePaused = motionPaused || useThemeHold();
+  const daylight = useTheme() === "light";
+  const phone = useIntroPhone();
   const introRef = useRef<HTMLDivElement | null>(null);
   const atmosphereRef = useRef<HTMLDivElement | null>(null);
   const enterHintRef = useRef<HTMLButtonElement | null>(null);
@@ -437,9 +460,9 @@ export default function PlanetGreeting({ onEnter }: { onEnter: () => void }) {
     <>
       <div
         ref={introRef}
-        data-motion-paused={motionPaused}
+        data-motion-paused={scenePaused}
         data-motion-policy="full"
-        data-intro-chapter={chapter}
+        data-intro-chapter="welcome"
         data-reduced-motion={reduced}
         role="main"
         tabIndex={-1}
@@ -456,11 +479,12 @@ export default function PlanetGreeting({ onEnter }: { onEnter: () => void }) {
             <div
               className="intro-sky-base absolute inset-0"
             />
-            <SeamlessBackdrop
-              src={VIDEO_URL}
-              poster={POSTER_URL}
-              paused={motionPaused}
-            />
+            <div className="intro-backdrop-layer intro-backdrop-night" data-active={!daylight}>
+              <SeamlessBackdrop src={phone ? MOBILE_NIGHT_VIDEO : VIDEO_URL} poster={phone ? MOBILE_NIGHT_POSTER : POSTER_URL} paused={scenePaused || daylight} />
+            </div>
+            <div className="intro-backdrop-layer intro-backdrop-day" data-active={daylight}>
+              <SeamlessBackdrop src={phone ? MOBILE_DAY_VIDEO : DAYLIGHT_VIDEO_URL} poster={phone ? MOBILE_DAY_POSTER : DAYLIGHT_POSTER_URL} paused={scenePaused || !daylight} looped />
+            </div>
             <div
               className="intro-sky-vignette absolute inset-0"
             />
@@ -477,13 +501,15 @@ export default function PlanetGreeting({ onEnter }: { onEnter: () => void }) {
             className="pointer-events-none absolute inset-0 z-20"
           />
           <Canvas
-            dpr={[1, 1.5]}
+            dpr={phone ? 1 : INTRO_DESKTOP_DPR}
+            resize={phone ? INTRO_PHONE_RESIZE : undefined}
             frameloop={motionPaused ? "demand" : "always"}
-            gl={{ antialias: true, alpha: true }}
-            camera={{ position: [0, 0, BASE_Z], fov: BASE_FOV }}
+            gl={phone ? INTRO_PHONE_GL : INTRO_DESKTOP_GL}
+            camera={INTRO_CAMERA}
           >
             <Suspense fallback={null}>
               <Scene
+                phone={phone}
                 daylight={daylight}
                 htmlPortal={htmlPortal}
                 rings={rings}
@@ -497,7 +523,7 @@ export default function PlanetGreeting({ onEnter }: { onEnter: () => void }) {
                 anchorRefs={anchorRefs}
                 hovered={hovered}
                 setHovered={setHovered}
-                motionPaused={motionPaused}
+                motionPaused={scenePaused}
                 pointer={pointer}
               />
             </Suspense>

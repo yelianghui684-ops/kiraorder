@@ -453,15 +453,6 @@
     font-size: 13px;
     line-height: 1.6;
   }
-  .app-shell .customer-cell > div {
-    min-width: 0;
-  }
-  .app-shell .customer-cell strong {
-    overflow-wrap: anywhere;
-  }
-  .app-shell .row-time {
-    font-variant-numeric: tabular-nums;
-  }
   .app-shell .mini-activity strong {
     font-size: 13px;
   }
@@ -480,32 +471,6 @@
   }
 }
 @media screen and (max-width: 760px) {
-  .app-shell .customer-cell p {
-    font-size: 12px;
-    line-height: 1.6;
-  }
-  .app-shell .customer-cell strong {
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  .app-shell .customer-cell p {
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-  .app-shell .order-row {
-    align-items: center;
-  }
-  .app-shell .row-state .pill {
-    max-width: 100%;
-    white-space: normal;
-    text-align: left;
-  }
-  .app-shell .row-time {
-    font-size: 12px;
-  }
-  .app-shell .row-state > small {
-    font-size: 12px;
-  }
   .app-shell .queue-toolbar .tabs {
     gap: 8px;
   }
@@ -519,9 +484,6 @@
   }
   .app-shell .queue-results {
     padding-inline: 18px;
-  }
-  .app-shell .order-table-head {
-    letter-spacing: 0.02em;
   }
   .app-shell .page-content {
     padding-bottom: max(28px, env(safe-area-inset-bottom));
@@ -852,7 +814,7 @@
   margin-bottom: 22px;
 }
 .app-shell .new-order-page .page-heading h1 {
-  font-size: 42px;
+  font-size: 40px;
   line-height: 1.15;
   letter-spacing: -0.6px;
 }
@@ -897,15 +859,6 @@
   line-height: 1.5;
   flex-wrap: wrap;
 }
-.app-shell .new-order-page .privacy-line {
-  line-height: 1.6;
-  margin: 12px 0 20px;
-  align-items: flex-start;
-}
-.app-shell .new-order-page .privacy-line > svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
 .app-shell .new-order-page .form-bottom {
   padding-top: 20px;
   flex-wrap: wrap;
@@ -920,7 +873,7 @@
 .app-shell .new-order-page .sample-panel > h3 {
   font-size: 24px;
   line-height: 1.2;
-  margin: 8px 0 16px;
+  margin: 0 0 8px;
 }
 .app-shell .new-order-page .sample-card {
   margin-top: 10px;
