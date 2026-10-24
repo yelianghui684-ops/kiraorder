@@ -19,11 +19,6 @@ const VIDEO_URL =
 const POSTER_URL =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260806_132328_5f9029c8-218f-4489-82b6-29ff2849920e.png";
 
-const DAYLIGHT_VIDEO_URL = `${import.meta.env.BASE_URL}assets/daylight-wave-gentle-loop.mp4`;
-const DAYLIGHT_POSTER_URL = `${import.meta.env.BASE_URL}assets/daylight-wave-gentle-loop.jpg`;
-
-const MOBILE_DAY_VIDEO = `${import.meta.env.BASE_URL}assets/daylight-wave-mobile.mp4`;
-const MOBILE_DAY_POSTER = `${import.meta.env.BASE_URL}assets/daylight-wave-mobile.jpg`;
 const MOBILE_NIGHT_VIDEO = `${import.meta.env.BASE_URL}assets/night-background-mobile.mp4`;
 const MOBILE_NIGHT_POSTER = `${import.meta.env.BASE_URL}assets/night-background-mobile.jpg`;
 
@@ -479,12 +474,8 @@ export default function PlanetGreeting({ onEnter }: { onEnter: () => void }) {
             <div
               className="intro-sky-base absolute inset-0"
             />
-            <div className="intro-backdrop-layer intro-backdrop-night" data-active={!daylight}>
-              <SeamlessBackdrop src={phone ? MOBILE_NIGHT_VIDEO : VIDEO_URL} poster={phone ? MOBILE_NIGHT_POSTER : POSTER_URL} paused={scenePaused || daylight} />
-            </div>
-            <div className="intro-backdrop-layer intro-backdrop-day" data-active={daylight}>
-              <SeamlessBackdrop src={phone ? MOBILE_DAY_VIDEO : DAYLIGHT_VIDEO_URL} poster={phone ? MOBILE_DAY_POSTER : DAYLIGHT_POSTER_URL} paused={scenePaused || !daylight} looped />
-            </div>
+            {/* One nebula plate carries both themes; daylight is a colour treatment in CSS. */}
+            <SeamlessBackdrop src={phone ? MOBILE_NIGHT_VIDEO : VIDEO_URL} poster={phone ? MOBILE_NIGHT_POSTER : POSTER_URL} paused={scenePaused} />
             <div
               className="intro-sky-vignette absolute inset-0"
             />

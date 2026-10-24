@@ -30,18 +30,7 @@
 :root[data-theme="light"] .intro-sky-edge,
 :root[data-theme="light"] .nebula-haze { display: none; }
 
-.intro-backdrop-day .nebula-video-drift {
-  inset: 0;
-  mix-blend-mode: multiply;
-  opacity: 1;
-  filter: invert(1);
-  animation-name: daylight-particle-drift;
-}
-/* A small overscan keeps the smaller particles covered during the depth movement. */
-@keyframes daylight-particle-drift {
-  0%, 100% { transform: translate3d(-1%, .5%, 0) scale(1.03) rotate(-.5deg); }
-  50% { transform: translate3d(1%, -.5%, 0) scale(1.06) rotate(.5deg); }
-}
+:root[data-theme="light"] .nebula-video-drift { mix-blend-mode: multiply; opacity: .84; filter: grayscale(1) invert(1); }
 :root[data-theme="light"] .intro-reading-plane,
 :root[data-theme="light"] .intro-reading-plane p { color: var(--intro-ink); }
 :root[data-theme="light"] .intro-masthead,
@@ -100,26 +89,12 @@
   :root[data-theme="light"] .intro-root:not([data-motion-policy="full"]) :is(.intro-reading-scrim, .intro-closing-scrim, [data-intro-welcome]) { transition: none; }
 }
 
-/* Each video keeps its own treatment while the two themes exchange visibility. */
-.intro-backdrop-layer { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity var(--theme-reveal-ms, 900ms) cubic-bezier(.22, .8, .18, 1); }
-.intro-backdrop-layer[data-active="true"] { opacity: 1; }
-.intro-backdrop-day { inset: 3.7%; }
-.intro-backdrop-day .nebula-haze { display: none; }
-.intro-backdrop-night .nebula-video-drift { inset: -10%; opacity: .92; filter: none; mix-blend-mode: screen; animation-name: nebula-drift; }
-:root[data-theme-transition="native"] .intro-backdrop-layer { transition: none; }
-@media (prefers-reduced-motion: reduce) { .intro-backdrop-layer { transition: none; } }
-
 @media (max-width: 760px) {
   /* Keep the same projected sizes with compositor-friendly planes on touch screens. */
   .intro-depth-stage { perspective: none; transform-style: flat; }
   .intro-depth-middle, .intro-depth-foreground, .intro-reading-plane { transform-style: flat; }
   .intro-depth-background, .intro-depth-middle { will-change: transform; }
   .intro-root [data-greeting] { will-change: auto; }
-  /* Mobile footage is pre-toned at 720p; avoid full-screen filter/blend passes. */
-  .intro-backdrop-day .nebula-video-drift { filter: none; mix-blend-mode: normal; }
-  .intro-backdrop-night .nebula-video-drift { mix-blend-mode: normal; }
-  .intro-backdrop-layer .nebula-video-drift { animation: none; transform: scale(1.03); }
-  .intro-backdrop-night .nebula-haze { display: none; }
   .intro-root .intro-depth-middle [data-intro-welcome] { mask-image: none; transition: opacity 600ms ease; }
   .intro-root[data-intro-chapter="close"] .intro-depth-middle [data-intro-welcome] { opacity: .15; }
 }

@@ -17,6 +17,7 @@ let requested: Theme | null = null;
 let revision = 0;
 let active: ViewTransition | null = null;
 let fallbackTimer: ReturnType<typeof setTimeout> | undefined;
+let guardTimer: ReturnType<typeof setTimeout> | undefined;
 let holding = false;
 const holdListeners = new Set<() => void>();
 
@@ -80,6 +81,7 @@ export function toggleTheme(origin?: Element | null) {
   const current = ++revision;
   active?.skipTransition();
   clearTimeout(fallbackTimer);
+  clearTimeout(guardTimer);
   const commit = () => {
     if (current !== revision) return;
     flushSync(() => {
@@ -91,6 +93,7 @@ export function toggleTheme(origin?: Element | null) {
   };
   const finish = () => {
     if (current !== revision) return;
+    clearTimeout(guardTimer);
     delete root.dataset.themeTransition;
     setHolding(false);
     requested = null;
@@ -102,10 +105,24 @@ export function toggleTheme(origin?: Element | null) {
     root.dataset.themeTransition = "native";
     // Freeze first, so the outgoing frame is captured from the settled scene.
     flushSync(() => setHolding(true));
-    active = document.startViewTransition(commit);
-    // A skipped transition still applies the most recent requested theme.
-    void active.ready.catch(() => {});
-    void active.finished.then(finish, finish);
+    let transition: ViewTransition | null = null;
+    try {
+      transition = document.startViewTransition(commit);
+    } catch {
+      transition = null; // An engine that refuses the transition still gets the theme.
+    }
+    if (transition) {
+      active = transition;
+      // A skipped transition still applies the most recent requested theme.
+      void transition.ready.catch(() => {});
+      void transition.finished.then(finish, finish);
+      // Never keep the scene held if a browser drops the transition's end event.
+      guardTimer = setTimeout(finish, REVEAL_MS + 1500);
+    } else {
+      delete root.dataset.themeTransition;
+      commit();
+      finish();
+    }
   } else {
     if (!reduced) root.dataset.themeTransition = "fallback";
     else delete root.dataset.themeTransition;

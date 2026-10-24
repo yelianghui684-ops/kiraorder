@@ -1,16 +1,14 @@
 import { memo, useEffect, useRef } from "react";
 
-/** Closed-loop assets play natively; other footage blends between two decoders. */
+/** Alternate two decoders so the opening frames blend over the ending frames. */
 export const SeamlessBackdrop = memo(function SeamlessBackdrop({
   src,
   poster,
   paused,
-  looped = false,
 }: {
   src: string;
   poster: string;
   paused: boolean;
-  looped?: boolean;
 }) {
   const videos = useRef<(HTMLVideoElement | null)[]>([]);
   const previousSrc = useRef(src);
@@ -36,11 +34,6 @@ export const SeamlessBackdrop = memo(function SeamlessBackdrop({
     if (paused) {
       layers.forEach((video) => video?.pause());
       return;
-    }
-    if (looped) {
-      const video = layers[0];
-      void video?.play().catch(() => { /* Retain the poster if autoplay is unavailable. */ });
-      return () => video?.pause();
     }
     let frame = 0;
     let disposed = false;
@@ -101,12 +94,12 @@ export const SeamlessBackdrop = memo(function SeamlessBackdrop({
       cancelAnimationFrame(frame);
       layers.forEach((video) => video?.pause());
     };
-  }, [paused, src, looped]);
+  }, [paused, src]);
 
   return (
     <div className="nebula-backdrop" data-paused={paused} aria-hidden="true">
       <div className="nebula-video-drift">
-        {(looped ? [0] : [0, 1]).map((layer) => (
+        {[0, 1].map((layer) => (
           <video
             key={layer}
             ref={(video) => {
@@ -115,7 +108,6 @@ export const SeamlessBackdrop = memo(function SeamlessBackdrop({
             src={src}
             poster={poster}
             muted
-            loop={looped}
             autoPlay={!paused && layer === 0}
             playsInline
             preload="auto"
